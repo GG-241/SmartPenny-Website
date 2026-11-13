@@ -16,14 +16,17 @@
   <meta property="og:image:alt" content="Lucky Penny dashboard: income, expenses and balance at a glance" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://gg-241.github.io/SmartPenny-Website/assets/img/og-image.jpg" />
-  <link rel="icon" type="image/png" href="assets/img/penny_icon.png" />
-  <link rel="apple-touch-icon" href="assets/img/penny_icon.png" />
+  <link rel="icon" type="image/png" href="assets/img/lucky-penny-icon.png" />
+  <link rel="apple-touch-icon" href="assets/img/lucky-penny-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/theme.css" />
+  <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root { --ease: cubic-bezier(.22, 1, .36, 1); }
 
     html { scroll-behavior: smooth; }
 
@@ -33,6 +36,16 @@
       color: var(--text);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; z-index: 200;
+      width: 100%; height: 2px;
+      transform: scaleX(0); transform-origin: 0 50%;
+      background: linear-gradient(90deg, var(--violet), var(--violet-l));
+      pointer-events: none;
     }
 
     /* ── NAV ── */
@@ -44,6 +57,11 @@
       background: var(--nav-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
+      transition: box-shadow .3s, border-color .3s;
+    }
+    nav.is-scrolled {
+      box-shadow: 0 12px 32px rgb(var(--bg-rgb) / .45);
+      border-bottom-color: rgb(var(--accent-primary-rgb) / .30);
     }
     .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .logo-gem {
@@ -53,20 +71,29 @@
     }
     .nav-logo span { font-weight: 700; font-size: 1.15rem; color: var(--text); }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-links a {
+      position: relative; color: var(--muted); text-decoration: none;
+      font-size: .9rem; font-weight: 500; transition: color .2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; right: 100%; bottom: -5px; height: 1.5px;
+      background: var(--violet); transition: right .3s var(--ease);
+    }
     .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
     @media (max-width: 640px) { .nav-links { display: none; } }
 
     /* ── WIP BANNER ── */
     .wip-banner {
-      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      display: block;
       background: var(--banner-bg);
       border-bottom: 1px solid var(--banner-border);
       padding: .65rem 1rem;
       font-size: .85rem; font-weight: 600; color: var(--banner-text);
-      letter-spacing: .01em; text-align: center;
+      letter-spacing: .01em; text-align: center; line-height: 1.5;
     }
     .wip-dot {
+      display: inline-block; vertical-align: middle; margin-right: .5rem;
       width: 8px; height: 8px; border-radius: 50%;
       background: var(--banner-dot);
       box-shadow: 0 0 0 0 var(--banner-shadow);
@@ -81,23 +108,97 @@
 
     /* ── HERO ── */
     .hero {
+      position: relative; overflow: hidden;
       text-align: center;
-      padding: clamp(4rem, 10vw, 7rem) clamp(1rem, 6vw, 3rem) clamp(3rem, 6vw, 5rem);
+      padding: clamp(3.25rem, 8vw, 6rem) clamp(1rem, 6vw, 3rem) clamp(3rem, 6vw, 4.5rem);
       background: var(--hero-glow);
     }
+    .hero::before,
+    .hero::after {
+      content: ''; position: absolute; pointer-events: none;
+      border-radius: 50%; filter: blur(20px); z-index: 0;
+    }
+    .hero::before {
+      width: min(70vw, 640px); aspect-ratio: 1; left: 50%; top: -45%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgb(var(--accent-primary-rgb) / .22), transparent 65%);
+      animation: drift-a 16s ease-in-out infinite alternate;
+    }
+    .hero::after {
+      width: min(52vw, 460px); aspect-ratio: 1; right: -8%; bottom: -35%;
+      background: radial-gradient(circle, rgb(168 85 247 / .14), transparent 65%);
+      animation: drift-b 20s ease-in-out infinite alternate;
+    }
+    @keyframes drift-a {
+      from { transform: translate(-50%, 0) scale(1); }
+      to   { transform: translate(-46%, 5%) scale(1.12); }
+    }
+    @keyframes drift-b {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(-6%, -8%) scale(1.15); }
+    }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-logo-wrap {
+      display: flex; justify-content: center; margin-bottom: 1.6rem;
+      animation: rise .9s var(--ease) both;
+    }
+    .hero-logo {
+      width: 88px; height: 88px;
+      border-radius: 22px;
+      box-shadow:
+        0 20px 45px rgb(var(--bg-rgb) / .60),
+        0 0 0 1px rgb(var(--accent-primary-rgb) / .35),
+        0 0 60px rgb(var(--accent-primary-rgb) / .28);
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-7px); }
+    }
+
     .hero h1 {
       font-size: clamp(2.4rem, 6vw, 4.2rem);
       font-weight: 800; line-height: 1.12;
       letter-spacing: -.03em;
       max-width: 820px; margin: 0 auto .75rem;
+      animation: rise .9s var(--ease) .08s both;
     }
-    .hero h1 span { color: var(--violet); }
+    .hero h1 span {
+      color: var(--violet);
+      background: linear-gradient(100deg, var(--violet-d), var(--violet-l), var(--violet-d));
+      background-size: 220% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      animation: shimmer 7s ease-in-out infinite;
+    }
+    @media (prefers-color-scheme: light) {
+      .hero h1 span {
+        background-image: linear-gradient(100deg, #8a6729, #9f7a35, #74541c, #9f7a35);
+      }
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
     .hero p.hero-sub {
       font-size: clamp(1rem, 2.2vw, 1.2rem);
       color: var(--muted); max-width: 560px; margin: 0 auto 2.4rem;
+      animation: rise .9s var(--ease) .16s both;
     }
-    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .hero-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: rise .9s var(--ease) .24s both;
+    }
+    .hero-trust { animation: rise .9s var(--ease) .32s both; }
+    .hero-switch { animation: rise .9s var(--ease) .38s both; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     .btn-store {
+      position: relative; overflow: hidden;
       display: inline-flex; align-items: center; gap: .75rem;
       padding: .75rem 1.5rem;
       background: var(--bg2);
@@ -105,9 +206,21 @@
       border-radius: var(--radius);
       color: var(--text);
       text-decoration: none;
-      transition: border-color .2s, background .2s, transform .15s;
+      transition: border-color .2s, background .2s, transform .2s var(--ease), box-shadow .2s;
     }
-    .btn-store:hover { border-color: var(--violet); background: var(--btn-hover-bg); transform: translateY(-2px); }
+    .btn-store:not(.btn-store-soon):hover {
+      border-color: var(--violet);
+      background: var(--btn-hover-bg);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px rgb(var(--bg-rgb) / .45);
+    }
+    .btn-store:not(.btn-store-soon)::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(110deg, transparent 32%, rgb(var(--text-rgb) / .10) 50%, transparent 68%);
+      transform: translateX(-120%);
+      transition: transform .8s var(--ease);
+    }
+    .btn-store:not(.btn-store-soon):hover::after { transform: translateX(120%); }
     .btn-store-soon, .btn-store-soon:hover {
       cursor: default;
       opacity: .6;
@@ -135,9 +248,26 @@
       color: var(--violet); margin-bottom: .75rem;
     }
     .section-title { font-size: clamp(1.7rem, 3.5vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; margin-bottom: .75rem; }
-    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 540px; }
+    .section-sub { color: var(--muted); font-size: 1.05rem; max-width: 560px; }
     .center { text-align: center; }
     .section-sub.center { margin: 0 auto; text-align: center; }
+
+    /* ── SCROLL REVEALS ── */
+    .reveal {
+      opacity: 0; transform: translateY(26px);
+      transition:
+        opacity .8s var(--ease),
+        transform .8s var(--ease);
+      transition-delay: calc(var(--i, 0) * 90ms);
+      will-change: opacity, transform;
+    }
+    .reveal.is-in { opacity: 1; transform: none; }
+    .reveal-left  { transform: translateX(-32px); }
+    .reveal-right { transform: translateX(32px); }
+    .reveal-left.is-in, .reveal-right.is-in { transform: none; }
+    @media (max-width: 700px) {
+      .reveal-left, .reveal-right { transform: translateY(26px); }
+    }
 
     /* ── SCREENSHOT STRIP ── */
     .shots-section { background: var(--bg); padding-top: clamp(1rem, 3vw, 2rem); }
@@ -159,6 +289,12 @@
       border-radius: 14px;
       border: 1px solid var(--border);
       display: block;
+      transition: transform .45s var(--ease), border-color .3s, box-shadow .45s;
+    }
+    .shot-strip img:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: var(--premium-border);
+      box-shadow: 0 22px 44px rgb(var(--bg-rgb) / .55);
     }
 
     /* ── OUTCOME BLOCKS ── */
@@ -181,6 +317,12 @@
     .outcome-shot img {
       width: clamp(180px, 50vw, 225px); height: auto;
       border-radius: 14px; border: 1px solid var(--border);
+      transition: transform .5s var(--ease), box-shadow .5s, border-color .3s;
+    }
+    .outcome-shot img:hover {
+      transform: translateY(-6px);
+      border-color: var(--premium-border);
+      box-shadow: 0 24px 50px rgb(var(--bg-rgb) / .55);
     }
     .outcome-list { list-style: none; margin-top: 1.1rem; display: flex; flex-direction: column; gap: .65rem; }
     .outcome-list li {
@@ -214,6 +356,12 @@
     .offline-card {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 2rem;
+      transition: border-color .3s, transform .4s var(--ease), box-shadow .4s;
+    }
+    .offline-card:hover {
+      border-color: var(--premium-border);
+      transform: translateY(-4px);
+      box-shadow: 0 22px 46px rgb(var(--bg-rgb) / .45);
     }
     .offline-card h4 { font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
     .table-row {
@@ -236,37 +384,57 @@
       color: var(--muted); padding: .75rem 1rem; text-align: left;
       border-bottom: 1px solid var(--border);
     }
-    .plat-table td { padding: .75rem 1rem; font-size: .875rem; border-bottom: 1px solid var(--border); }
+    .plat-table td { padding: .75rem 1rem; font-size: .875rem; border-bottom: 1px solid var(--border); transition: background .2s; }
     .plat-table tr:last-child td { border-bottom: none; }
-    .plat-table tr:hover td { background: var(--table-hover); }
+    .plat-table tbody tr { transition: transform .2s var(--ease); }
+    .plat-table tbody tr:hover { transform: translateX(3px); }
+    .plat-table tbody tr:hover td { background: var(--table-hover); }
     .dot-yes  { color: var(--green); }
 
     /* ── FAQ ── */
     .faq-section { background: var(--bg); border-top: 1px solid var(--border); }
-    .faq-list {
-      max-width: 760px; margin: 2.5rem auto 0;
-      display: flex; flex-direction: column; gap: .75rem;
+    .faq-grid {
+      max-width: 940px; margin: 2.5rem auto 0;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.1rem;
     }
-    .faq-list details {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.05rem 1.35rem;
-      transition: border-color .2s;
+    @media (max-width: 760px) { .faq-grid { grid-template-columns: 1fr; } }
+    .faq-card {
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.6rem;
+      transition: transform .4s var(--ease), border-color .3s, box-shadow .4s;
     }
-    .faq-list details[open] { border-color: var(--premium-border); }
-    .faq-list summary {
-      cursor: pointer; list-style: none;
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-      font-weight: 600; font-size: .95rem;
+    .faq-card::before {
+      content: ''; position: absolute; inset: 0 0 auto; height: 2px;
+      background: linear-gradient(90deg, var(--violet), transparent 85%);
+      opacity: 0; transition: opacity .35s;
     }
-    .faq-list summary::-webkit-details-marker { display: none; }
-    .faq-list summary::after {
-      content: '+'; color: var(--violet);
-      font-size: 1.3rem; font-weight: 700; line-height: 1; flex-shrink: 0;
+    .faq-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--premium-border);
+      box-shadow: 0 20px 42px rgb(var(--bg-rgb) / .42);
     }
-    .faq-list details[open] summary::after { content: '−'; }
-    .faq-list details p { margin-top: .7rem; color: var(--muted); font-size: .9rem; }
-    .faq-list details a { color: var(--violet); text-decoration: none; }
-    .faq-list details a:hover { text-decoration: underline; }
+    .faq-card:hover::before { opacity: 1; }
+    .faq-card-top { display: flex; align-items: center; gap: .6rem; margin-bottom: .9rem; }
+    .faq-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 8px;
+      background: rgb(var(--accent-primary-rgb) / .12);
+      color: var(--violet);
+    }
+    .faq-icon svg { width: 15px; height: 15px; }
+    .faq-cat {
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--violet);
+    }
+    .faq-card h3 { font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.35; margin-bottom: .55rem; }
+    .faq-card p { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+    .faq-card p strong { color: var(--text); font-weight: 600; }
 
     /* ── FOOTER ── */
     footer {
@@ -281,22 +449,34 @@
     .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .footer-links a { color: var(--muted); font-size: .85rem; text-decoration: none; transition: color .2s; }
     .footer-links a:hover { color: var(--text); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
   </style>
 <!-- Cookieless visit and click counts; see privacy.html section 12. -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="5c60fb75-4c11-4f28-b2e4-7a822c459c5e"></script>
 </head>
 <body>
 
+<div class="scroll-progress" aria-hidden="true"></div>
+
 <!-- WIP BANNER (remove at launch) -->
 <div class="wip-banner">
   <span class="wip-dot"></span>
-  Currently in private testing &nbsp;·&nbsp; App Store &amp; Google Play launch coming soon
+  In private testing. App Store and Google Play are next.
 </div>
 
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">
-    <img class="logo-gem" src="assets/img/penny_icon.png" alt="Lucky Penny logo" />
+    <img class="logo-gem" src="assets/img/lucky-penny-icon.png" alt="Lucky Penny logo" width="34" height="34" />
     <span>Lucky Penny</span>
   </a>
   <ul class="nav-links">
@@ -309,8 +489,11 @@
 
 <!-- HERO -->
 <header class="hero">
-  <h1>The <span>private budget app</span>. No account, no bank login.</h1>
-  <p class="hero-sub">Track spending, budgets and goals, and split costs with friends — offline, on your phone.</p>
+  <div class="hero-logo-wrap">
+    <img class="hero-logo" src="assets/img/lucky-penny-icon.png" alt="" width="88" height="88" aria-hidden="true" />
+  </div>
+  <h1>A budget app that <span>stays on your phone</span>.</h1>
+  <p class="hero-sub">Log what you spend, give your money a plan, and split bills with friends. No account, no bank login, and it all works with the internet off.</p>
   <div class="hero-btns">
     <!--
       LAUNCH DAY: the listings are not live yet (both URLs 404). When the App Store
@@ -338,20 +521,20 @@
       </span>
     </div>
   </div>
-  <p class="hero-trust">Free · No ads · No account · Data stored on your phone</p>
-  <p class="hero-switch">Already tracking elsewhere? <a href="#faq-import">Import your history from YNAB, Splitwise, Revolut, N26 or Monzo in 2&nbsp;minutes&nbsp;→</a></p>
+  <p class="hero-trust">Free while in testing · No ads · No account · Data on your phone</p>
+  <p class="hero-switch">Moving from YNAB, Splitwise, Revolut, N26 or Monzo? <a href="#faq-import">Bring your history over in a couple of minutes&nbsp;→</a></p>
 </header>
 
 <!-- SCREENSHOTS -->
 <section id="screenshots" class="shots-section" aria-label="App screenshots">
-  <p class="section-label center">See for yourself</p>
-  <div class="shot-strip">
-    <img src="assets/screenshots/1-dashboard.webp" width="640" height="1391" alt="Dashboard: income, expenses and total balance — your money at a glance" />
-    <img src="assets/screenshots/2-quickadd.webp" width="640" height="1391" loading="lazy" decoding="async" alt="New transaction: log an expense, income or investment in seconds" />
-    <img src="assets/screenshots/3-budgets.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Budgets with per-category progress bars that warn you early" />
-    <img src="assets/screenshots/4-analytics.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Analytics: spending habits, trends and forecasts" />
-    <img src="assets/screenshots/5-group.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Group splitting for a trip: members, balances and settle up" />
-    <img src="assets/screenshots/6-privacy.webp" width="640" height="1391" loading="lazy" decoding="async" alt="First launch: all data stays on this device, sign in later to enable cloud sync" />
+  <p class="section-label center reveal">In the app</p>
+  <div class="shot-strip" data-stagger>
+    <img class="reveal" src="assets/screenshots/1-dashboard.webp" width="640" height="1391" alt="Dashboard: income, expenses and total balance — your money at a glance" />
+    <img class="reveal" src="assets/screenshots/2-quickadd.webp" width="640" height="1391" loading="lazy" decoding="async" alt="New transaction: log an expense, income or investment in seconds" />
+    <img class="reveal" src="assets/screenshots/3-budgets.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Budgets with per-category progress bars that warn you early" />
+    <img class="reveal" src="assets/screenshots/4-analytics.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Analytics: spending habits, trends and forecasts" />
+    <img class="reveal" src="assets/screenshots/5-group.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Group splitting for a trip: members, balances and settle up" />
+    <img class="reveal" src="assets/screenshots/6-privacy.webp" width="640" height="1391" loading="lazy" decoding="async" alt="First launch: all data stays on this device, sign in later to enable cloud sync" />
   </div>
 </section>
 
@@ -359,22 +542,20 @@
 <section id="offline" class="offline-section">
   <div class="offline-inner">
     <div>
-      <p class="section-label">Privacy by design</p>
-      <h2 class="section-title">Offline-first, always.</h2>
-      <p class="section-sub">Your data lives on your device. Lucky Penny is fully functional without any network connection. Cloud features are strictly opt-in — nothing leaves your device by default.</p>
-      <ul class="offline-list">
-        <li><span class="check">✓</span><span>No account required — everything works on first launch</span></li>
-        <li><span class="check">✓</span><span>Data stored locally on your device by default</span></li>
-        <li><span class="check">✓</span><span>Receipt scanning runs on your phone — receipt images are never uploaded</span></li>
-        <li><span class="check">✓</span><span>Private keys and sensitive data kept in protected app storage</span></li>
-        <li><span class="check">✓</span><span>Optional cloud sync stays private and under your control</span></li>
-        <li><span class="check">✓</span><span>Offline banner + connectivity guard on all network operations</span></li>
-        <li><span class="check">✓</span><span>Biometric lock — Face ID, Touch ID or PIN</span></li>
-        <li><span class="check">✓</span><span>Complete data wipe on request — device and cloud data, under your control</span></li>
+      <p class="section-label reveal">Privacy</p>
+      <h2 class="section-title reveal" style="--i:1">Your data doesn't leave the phone.</h2>
+      <p class="section-sub reveal" style="--i:2">Lucky Penny is built to run with no connection at all. Sync and backup are there if you want them, but until you switch them on, nothing is uploaded anywhere.</p>
+      <ul class="offline-list" data-stagger>
+        <li class="reveal"><span class="check">✓</span><span>Open it and start — no sign-up screen in the way</span></li>
+        <li class="reveal"><span class="check">✓</span><span>Transactions, budgets and goals live in the app's storage on your device</span></li>
+        <li class="reveal"><span class="check">✓</span><span>Receipt photos are read on the phone and never uploaded</span></li>
+        <li class="reveal"><span class="check">✓</span><span>Face ID, Touch ID or a PIN to get in</span></li>
+        <li class="reveal"><span class="check">✓</span><span>Cloud sync and backup are opt-in, one device at a time</span></li>
+        <li class="reveal"><span class="check">✓</span><span>Export everything, or delete everything, from Settings</span></li>
       </ul>
     </div>
-    <div class="offline-card">
-      <h4>Feature availability</h4>
+    <div class="offline-card reveal reveal-right">
+      <h4>What works offline</h4>
       <div class="table-row"><span>Transactions, Budgets &amp; Goals</span><span class="badge badge-yes">Always on</span></div>
       <div class="table-row"><span>Analytics &amp; Reports</span><span class="badge badge-yes">Always on</span></div>
       <div class="table-row"><span>Receipt Scanning (on-device)</span><span class="badge badge-yes">Always on</span></div>
@@ -394,87 +575,86 @@
 <!-- FEATURES -->
 <section id="features" class="features">
   <div style="max-width:1100px;margin:0 auto;">
-    <p class="section-label center">What Lucky Penny does</p>
-    <h2 class="section-title center">Everything you need, nothing you don't</h2>
-    <p class="section-sub center">A full personal finance suite that runs on your phone — free, offline, and private by default.</p>
+    <p class="section-label center reveal">Features</p>
+    <h2 class="section-title center reveal" style="--i:1">The tools, without the account</h2>
+    <p class="section-sub center reveal" style="--i:2">Everything you'd expect from a finance app, built to work on the phone in your hand.</p>
   </div>
 
   <div class="outcomes">
 
     <div class="outcome">
-      <div class="outcome-text">
+      <div class="outcome-text reveal reveal-left">
         <span class="kicker">Track</span>
-        <h3>Know where the money goes</h3>
+        <h3>Log spending in a few seconds</h3>
         <ul class="outcome-list">
-          <li><span class="check">✓</span><span>Log an expense in seconds — amount, category, note, receipt scan</span></li>
-          <li><span class="check">✓</span><span>Smart auto-categories learn from your edits</span></li>
-          <li><span class="check">✓</span><span>Recurring transactions and 15+ currencies with automatic conversion</span></li>
+          <li><span class="check">✓</span><span>Amount, category, note, and a photo of the receipt if you have one</span></li>
+          <li><span class="check">✓</span><span>Categories that pick up your corrections over time</span></li>
+          <li><span class="check">✓</span><span>Repeating bills and 15+ currencies, converted automatically</span></li>
         </ul>
       </div>
-      <div class="outcome-shot">
+      <div class="outcome-shot reveal reveal-right">
         <img src="assets/screenshots/2-quickadd.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Logging a new transaction with amount, currency and category" />
       </div>
     </div>
 
     <div class="outcome flip">
-      <div class="outcome-text">
+      <div class="outcome-text reveal reveal-right">
         <span class="kicker">Plan</span>
-        <h3>See next month before it happens</h3>
+        <h3>Budgets that speak up early</h3>
         <ul class="outcome-list">
-          <li><span class="check">✓</span><span>Budgets that warn you before you overspend</span></li>
-          <li><span class="check">✓</span><span>Savings goals with a monthly target calculator</span></li>
-          <li><span class="check">✓</span><span>A spending forecast built from your own history</span></li>
+          <li><span class="check">✓</span><span>Monthly and weekly limits, with a warning before you cross one</span></li>
+          <li><span class="check">✓</span><span>Savings goals that work out the monthly amount for you</span></li>
+          <li><span class="check">✓</span><span>A forecast built from what you actually spent, not a guess</span></li>
         </ul>
       </div>
-      <div class="outcome-shot">
+      <div class="outcome-shot reveal reveal-left">
         <img src="assets/screenshots/3-budgets.webp" width="640" height="1391" loading="lazy" decoding="async" alt="Monthly and weekly budgets with live progress bars" />
       </div>
     </div>
 
     <div class="outcome">
-      <div class="outcome-text">
+      <div class="outcome-text reveal reveal-left">
         <span class="kicker">Share</span>
-        <h3>Split costs, not trust</h3>
+        <h3>Split the bill, skip the spreadsheet</h3>
         <ul class="outcome-list">
-          <li><span class="check">✓</span><span>Split trips, dinners and bills — equal, custom shares or percentages</span></li>
-          <li><span class="check">✓</span><span>Settle up with a QR code, even offline</span></li>
-          <li><span class="check">✓</span><span>Per-person balances, so nobody loses track</span></li>
+          <li><span class="check">✓</span><span>Trips, dinners and rent — equal, custom shares or percentages</span></li>
+          <li><span class="check">✓</span><span>Settle up with a QR code, even with no signal</span></li>
+          <li><span class="check">✓</span><span>A running balance for each person, so nobody has to remember</span></li>
         </ul>
       </div>
-      <div class="outcome-shot">
+      <div class="outcome-shot reveal reveal-right">
         <img src="assets/screenshots/5-group.webp" width="640" height="1391" loading="lazy" decoding="async" alt="A shared trip group with member balances and settle up" />
       </div>
     </div>
 
     <div class="outcome flip">
-      <div class="outcome-text">
+      <div class="outcome-text reveal reveal-right">
         <span class="kicker">Private</span>
-        <h3>Yours alone, by default</h3>
+        <h3>Yours, and nobody else's</h3>
         <ul class="outcome-list">
-          <li><span class="check">✓</span><span>No account, no bank login, no ads, no tracking</span></li>
-          <li><span class="check">✓</span><span>Everything works offline — your data stays on your phone</span></li>
-          <li><span class="check">✓</span><span>Optional sync and backup, only if you turn them on</span></li>
+          <li><span class="check">✓</span><span>No account, no bank login, no ads</span></li>
+          <li><span class="check">✓</span><span>Works offline; the data sits on your device</span></li>
+          <li><span class="check">✓</span><span>Sync is optional and off until you turn it on</span></li>
         </ul>
       </div>
-      <div class="outcome-shot">
+      <div class="outcome-shot reveal reveal-left">
         <img src="assets/screenshots/6-privacy.webp" width="640" height="1391" loading="lazy" decoding="async" alt="First launch screen: all data stays on this device" />
       </div>
     </div>
 
   </div>
 
-  <p class="features-more">
-    Plus receipt scanning, PDF reports, CSV/Excel/JSON export, biometric lock, home-screen widgets, 4 languages, and full accessibility support —
-    with the technical details on the <a href="how-it-works.html">How it works</a> page.
+  <p class="features-more reveal">
+    Also in there: receipt scanning, PDF reports, CSV/Excel/JSON export, a biometric lock, home-screen widgets, four languages (English, Greek, Spanish, French) and accessibility settings. The technical detail is on the <a href="how-it-works.html">How it works</a> page.
   </p>
 </section>
 
 <!-- PLATFORMS -->
 <section id="platforms" class="platform-section">
-  <p class="section-label center">Cross-platform</p>
-  <h2 class="section-title center">iPhone · Android</h2>
-  <p class="section-sub center">One app, native on both. Fully usable offline, on phones and tablets.</p>
-  <table class="plat-table">
+  <p class="section-label center reveal">Platforms</p>
+  <h2 class="section-title center reveal" style="--i:1">iPhone and Android</h2>
+  <p class="section-sub center reveal" style="--i:2">The same app on both, built natively for each. Nothing is held back on one platform.</p>
+  <table class="plat-table reveal" style="--i:3">
     <thead>
       <tr>
         <th>Feature</th>
@@ -500,34 +680,75 @@
 
 <!-- FAQ -->
 <section id="faq" class="faq-section">
-  <p class="section-label center">Questions</p>
-  <h2 class="section-title center">Frequently asked questions</h2>
-  <div class="faq-list">
+  <p class="section-label center reveal">Questions</p>
+  <h2 class="section-title center reveal" style="--i:1">The ones people ask</h2>
+  <div class="faq-grid" data-stagger>
 
-    <details>
-      <summary>Is it really free?</summary>
-      <p>Yes — everything in the app today is free: no account, no ads, no subscription, no trial that expires. A future version may add optional paid extras, but they'll be clearly marked and optional — never a surprise paywall over features you already use.</p>
-    </details>
+    <article class="faq-card reveal">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        </span>
+        <span class="faq-cat">Pricing</span>
+      </div>
+      <h3>What does the app cost?</h3>
+      <p>The app is currently free to use during its testing period. All features are available at no cost—there are no accounts, advertisements, subscriptions, or trial limits. If optional paid features are introduced in the future, they will be additional offerings rather than restrictions on the functionality you already use.</p>
+    </article>
 
-    <details>
-      <summary>Do I need an account?</summary>
-      <p>No. Everything works on first launch without signing in. An account (Sign in with Apple or Google) is only needed if you choose to turn on cloud sync or share with other people.</p>
-    </details>
+    <article class="faq-card reveal">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span class="faq-cat">Account and sign-in</span>
+      </div>
+      <h3>Do I need to create an account?</h3>
+      <p>No. You can open the app and start using it immediately. Signing in with Apple or Google is only required if you choose to enable cloud sync or share data with other people.</p>
+    </article>
 
-    <details>
-      <summary>Where is my data stored?</summary>
-      <p>On your phone, by default. Nothing is uploaded unless you opt into sync or backup — and receipts are scanned on-device, so images never leave your phone. You can export or wipe everything at any time from Settings.</p>
-    </details>
+    <article class="faq-card reveal">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <span class="faq-cat">Data and privacy</span>
+      </div>
+      <h3>Where is my data stored?</h3>
+      <p>Your data is stored locally on your phone. Nothing is uploaded unless you explicitly enable sync or backup. Receipts are processed on your device, so receipt images do not leave your phone. You can export or permanently delete your data at any time from Settings.</p>
+    </article>
 
-    <details id="faq-import">
-      <summary>Can I move my data from another app?</summary>
-      <p>Yes — import in minutes from YNAB, Splitwise, Revolut, N26 or Monzo, or any CSV/Excel file, with duplicate detection. Leaving is just as easy: export to CSV, Excel, PDF or a full JSON backup whenever you like. Your data is never locked in.</p>
-    </details>
+    <article class="faq-card reveal" id="faq-import">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </span>
+        <span class="faq-cat">Importing and exporting</span>
+      </div>
+      <h3>Can I import my existing transaction history?</h3>
+      <p>Yes. You can import data from YNAB, Splitwise, Revolut, N26, or Monzo, as well as from any CSV or Excel file. Duplicate entries are detected during import. You can also export your history to CSV, Excel, PDF, or a complete JSON backup at any time.</p>
+    </article>
 
-    <details>
-      <summary>What if I lose my phone?</summary>
-      <p>Turn on optional encrypted sync or cloud backup, or keep an exported JSON backup somewhere safe. Restore onto a new phone in minutes from <strong>Settings → Export / Import</strong>.</p>
-    </details>
+    <article class="faq-card reveal">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        <span class="faq-cat">Backup and recovery</span>
+      </div>
+      <h3>What happens if I lose my phone?</h3>
+      <p>You can protect your data by enabling encrypted sync or cloud backup, or by saving an exported JSON backup in a secure location. To restore your data on a new phone, go to <strong>Settings → Export / Import</strong> and select your backup file.</p>
+    </article>
+
+    <article class="faq-card reveal">
+      <div class="faq-card-top">
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        </span>
+        <span class="faq-cat">Offline use</span>
+      </div>
+      <h3>Does the app work without an internet connection?</h3>
+      <p>Yes. The app is designed to work fully offline. All core features—including expense tracking, bill splitting, and settling up with a QR code—work without an internet connection. Internet access is only needed for optional sync and backup features.</p>
+    </article>
 
   </div>
 </section>
@@ -535,7 +756,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <img class="logo-gem" src="assets/img/penny_icon.png" alt="Lucky Penny logo" style="width:28px;height:28px;" />
+    <img class="logo-gem" src="assets/img/lucky-penny-icon.png" alt="Lucky Penny logo" width="28" height="28" style="width:28px;height:28px;" />
     <span>© 2026 Lucky Penny · All Rights Reserved</span>
   </div>
   <div class="footer-links">
@@ -547,6 +768,52 @@
     <a href="contact.html">Contact</a>
   </div>
 </footer>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+
+    // Stagger children of marked groups.
+    document.querySelectorAll('[data-stagger]').forEach(function (group) {
+      group.querySelectorAll('.reveal').forEach(function (el, i) {
+        el.style.setProperty('--i', i);
+      });
+    });
+
+    if (reduce || !('IntersectionObserver' in window)) {
+      reveals.forEach(function (el) { el.classList.add('is-in'); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      reveals.forEach(function (el) { io.observe(el); });
+    }
+
+    // Nav shadow + reading progress.
+    var nav = document.querySelector('nav');
+    var bar = document.querySelector('.scroll-progress');
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        var y = window.scrollY || window.pageYOffset;
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        nav.classList.toggle('is-scrolled', y > 8);
+        if (bar) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
 
 </body>
 </html>
