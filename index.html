@@ -313,19 +313,22 @@
     <!--
       LAUNCH DAY: the listings are not live yet (both URLs 404). When the App Store
       listing goes live, change this div back into a real link:
-        <a class="btn-store" href="https://apps.apple.com/app/id6760491274">
+        <a class="btn-store" href="https://apps.apple.com/app/id6822307815" data-umami-event="appstore">
       and for Play:
-        <a class="btn-store" href="https://play.google.com/store/apps/details?id=com.luckypenny.app">
+        <a class="btn-store" href="https://play.google.com/store/apps/details?id=com.luckypenny.app" data-umami-event="playstore">
       Remove class "btn-store-soon", keep the inner spans, and delete the WIP banner above.
+      The App Store record is id6822307815 ("Lucky Penny: Budget Tracker", bundle
+      com.luckypenny.app); id6760491274 is the retired record and must not be linked.
+      data-umami-event names the click in the website analytics (privacy.html, "This website").
     -->
-    <div class="btn-store btn-store-soon" aria-disabled="true">
+    <div class="btn-store btn-store-soon" aria-disabled="true" data-umami-event="appstore-coming-soon">
       <span class="btn-store-icon">🍎</span>
       <span class="btn-store-text">
         <span class="btn-store-sub">Coming soon to the</span>
         <span class="btn-store-name">App Store</span>
       </span>
     </div>
-    <div class="btn-store btn-store-soon" aria-disabled="true">
+    <div class="btn-store btn-store-soon" aria-disabled="true" data-umami-event="playstore-coming-soon">
       <span class="btn-store-icon">▶</span>
       <span class="btn-store-text">
         <span class="btn-store-sub">Coming soon to</span>
