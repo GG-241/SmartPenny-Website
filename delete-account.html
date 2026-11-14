@@ -48,7 +48,7 @@
     }
     .page-hero .label {
       font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--violet); margin-bottom: .75rem;
+      color: var(--accent-text); margin-bottom: .75rem;
     }
     .page-hero h1 {
       font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
@@ -78,7 +78,7 @@
     }
     .toc ol { padding-left: 1.25rem; display: flex; flex-direction: column; gap: .4rem; }
     .toc li { font-size: .875rem; }
-    .toc a { color: var(--violet); text-decoration: none; }
+    .toc a { color: var(--accent-text); text-decoration: none; }
     .toc a:hover { text-decoration: underline; }
 
     .policy-section { margin-bottom: 3rem; scroll-margin-top: 80px; }
@@ -90,7 +90,7 @@
     .sec-num {
       display: inline-flex; align-items: center; justify-content: center;
       width: 26px; height: 26px; background: rgb(var(--accent-primary-rgb) / .18);
-      color: var(--violet); border-radius: 6px;
+      color: var(--accent-text); border-radius: 6px;
       font-size: .75rem; font-weight: 700; flex-shrink: 0;
     }
     .policy-section p { color: var(--muted); font-size: .925rem; margin-bottom: .85rem; }
@@ -132,9 +132,9 @@
     }
     .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
     .footer-logo span { color: var(--muted); font-size: .875rem; }
-    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; }
     .footer-links a { color: var(--muted); font-size: .85rem; text-decoration: none; }
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover, .footer-links a[aria-current="page"] { color: var(--text); }
   </style>
 <!-- Cookieless visit and click counts; see privacy.html section 12. -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="5c60fb75-4c11-4f28-b2e4-7a822c459c5e"></script>
@@ -167,7 +167,7 @@
   </div>
   <div class="policy-section" id="request">
     <h2><span class="sec-num">2</span> Request deletion without the app</h2>
-    <p>If you no longer have the app installed, use the <a href="contact.html?topic=deletion" style="color:var(--violet)">contact form</a> (topic: <strong>Delete my data or account</strong>) and write from the address linked to your Lucky Penny account (your Apple or Google sign-in email). We verify the request and delete the account within 30 days, then confirm by email.</p>
+    <p>If you no longer have the app installed, use the <a href="contact.html?topic=deletion" style="color:var(--accent-text)">contact form</a> (topic: <strong>Delete my data or account</strong>) and write from the address linked to your Lucky Penny account (your Apple or Google sign-in email). We verify the request and delete the account within 30 days, then confirm by email.</p>
   </div>
   <div class="policy-section" id="what">
     <h2><span class="sec-num">3</span> What is deleted</h2>
@@ -190,11 +190,12 @@
   </div>
   <div class="footer-links">
     <a href="index.html">Home</a>
-    <a href="terms.html">Terms</a>
-    <a href="privacy.html">Privacy</a>
+    <a href="how-it-works.html">How it works</a>
     <a href="support.html">Support</a>
-    <a href="delete-account.html">Delete account</a>
     <a href="contact.html">Contact</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="delete-account.html" aria-current="page">Delete account</a>
   </div>
 </footer>
 </body>

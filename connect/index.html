@@ -70,7 +70,7 @@
       font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
       font-size: 1.15rem;
       font-weight: 700;
-      color: var(--accent-primary);
+      color: var(--accent-text);
       background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -123,7 +123,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+    }
+
+    .store-icon { width: 1.15rem; height: 1.15rem; flex-shrink: 0; }
+    .btn-store { padding-inline: 1rem; }
+    .store-label { white-space: nowrap; }
+
+    .btn-store.is-soon,
+    .btn-store.is-soon:hover {
+      cursor: default;
+      opacity: .6;
+      transform: none;
+      box-shadow: none;
     }
 
     .divider {
@@ -205,14 +217,21 @@
 
     <div class="divider">or download</div>
 
-    <!-- Store buttons -->
-    <a id="ios-btn" href="https://apps.apple.com/app/id6822307815"
-       class="btn btn-store">
-      <span>📱</span> Download on the App Store
+    <!--
+      Store buttons. LAUNCH DAY: the listings are not live yet (both URLs 404),
+      so these render as disabled "coming soon" tiles. When a listing goes live,
+      set STORES_LIVE = true in the script below; it restores the links, the
+      live labels and the iOS fallback redirect. Same record ids as index.html.
+    -->
+    <a id="ios-btn" class="btn btn-store is-soon" aria-disabled="true"
+       data-href="https://apps.apple.com/app/id6822307815">
+      <svg class="store-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.77-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-2.99-.79-1.54.02-2.96.9-3.75 2.27-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.39-.92-2.4-3.66zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.02.61-2.67 1.37-.58.67-1.1 1.76-.96 2.8 1.02.08 2.06-.52 2.69-1.28z"/></svg>
+      <span class="store-label" data-live="Download on the App Store">App Store · coming soon</span>
     </a>
-    <a id="android-btn" href="https://play.google.com/store/apps/details?id=com.luckypenny.app"
-       class="btn btn-store">
-      <span>🤖</span> Get it on Google Play
+    <a id="android-btn" class="btn btn-store is-soon" aria-disabled="true"
+       data-href="https://play.google.com/store/apps/details?id=com.luckypenny.app">
+      <svg class="store-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M6.2 3.1A1.3 1.3 0 0 0 4.3 4.2v15.6a1.3 1.3 0 0 0 1.9 1.1l13.4-7.8a1.3 1.3 0 0 0 0-2.2L6.2 3.1z"/></svg>
+      <span class="store-label" data-live="Get it on Google Play">Google Play · coming soon</span>
     </a>
 
     <p class="hint">
@@ -223,6 +242,10 @@
 
   <script>
     (function() {
+      // Flip to true when the App Store / Play listings are live (see the
+      // LAUNCH DAY note above the store buttons).
+      var STORES_LIVE = false;
+
       var params = new URLSearchParams(window.location.search);
       var shareId = params.get('shareId') || '';
       var displayName = params.get('name') || '';
@@ -278,13 +301,23 @@
       var androidBtn = document.getElementById('android-btn');
       var ua = navigator.userAgent || navigator.vendor || window.opera;
 
+      if (STORES_LIVE) {
+        [iosBtn, androidBtn].forEach(function (btn) {
+          btn.href = btn.getAttribute('data-href');
+          btn.classList.remove('is-soon');
+          btn.removeAttribute('aria-disabled');
+          var label = btn.querySelector('.store-label');
+          label.textContent = label.getAttribute('data-live');
+        });
+      }
+
       if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
         // iOS: try deep link, show App Store as fallback
         androidBtn.style.display = 'none';
         // On iOS, the deep link often doesn't work from Safari without
         // universal links. We set a timeout to redirect to App Store if
         // the app doesn't open.
-        openBtn.addEventListener('click', function(e) {
+        if (STORES_LIVE) openBtn.addEventListener('click', function(e) {
           var start = Date.now();
           setTimeout(function() {
             if (Date.now() - start < 2000) {

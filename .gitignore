@@ -1,0 +1,41 @@
+# This repo is served as-is as a static site, so anything committed here is
+# public. Keep tooling, local config and editor/OS clutter out of it.
+
+# AI assistant and agent tooling
+.claude/
+.agent/
+.agents/
+.codex/
+.gemini/
+.hermes/
+.impeccable/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+
+# Local Plane backlog sync
+PLANE.md
+.plane.json
+
+# OS clutter
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local env, logs, scratch output
+.env
+.env.*
+*.log
+node_modules/
+tmp/
+.cache/
+screenshots-tmp/

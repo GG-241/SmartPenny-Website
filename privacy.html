@@ -49,7 +49,7 @@
     }
     .page-hero .label {
       font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--violet); margin-bottom: .75rem;
+      color: var(--accent-text); margin-bottom: .75rem;
     }
     .page-hero h1 {
       font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
@@ -79,7 +79,7 @@
     }
     .toc ol { padding-left: 1.25rem; display: flex; flex-direction: column; gap: .4rem; }
     .toc li { font-size: .875rem; }
-    .toc a { color: var(--violet); text-decoration: none; }
+    .toc a { color: var(--accent-text); text-decoration: none; }
     .toc a:hover { text-decoration: underline; }
 
     .policy-section { margin-bottom: 3rem; scroll-margin-top: 80px; }
@@ -91,7 +91,7 @@
     .sec-num {
       display: inline-flex; align-items: center; justify-content: center;
       width: 26px; height: 26px; background: rgb(var(--accent-primary-rgb) / .18);
-      color: var(--violet); border-radius: 6px;
+      color: var(--accent-text); border-radius: 6px;
       font-size: .75rem; font-weight: 700; flex-shrink: 0;
     }
     .policy-section p { color: var(--muted); font-size: .925rem; margin-bottom: .85rem; }
@@ -111,6 +111,8 @@
     }
     .callout strong { color: inherit; font-weight: 700; }
 
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0 .85rem; }
+    .table-scroll .data-table { margin: 0; min-width: 36rem; }
     .data-table {
       width: 100%; border-collapse: collapse;
       margin: 1rem 0 .85rem; font-size: .875rem;
@@ -133,9 +135,9 @@
     }
     .footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
     .footer-logo span { color: var(--muted); font-size: .875rem; }
-    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; }
     .footer-links a { color: var(--muted); font-size: .85rem; text-decoration: none; }
-    .footer-links a:hover { color: var(--text); }
+    .footer-links a:hover, .footer-links a[aria-current="page"] { color: var(--text); }
   </style>
 <!-- Cookieless visit and click counts; see privacy.html section 12. -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="5c60fb75-4c11-4f28-b2e4-7a822c459c5e"></script>
@@ -179,7 +181,7 @@
   </div>
   <div class="policy-section" id="s1">
     <h2><span class="sec-num">1</span> Who is responsible for your data</h2>
-    <p>Lucky Penny is developed and operated by an independent developer, who is the data controller under the EU General Data Protection Regulation (GDPR). Contact for anything in this policy, including requests to exercise your rights: the <a href="contact.html?topic=privacy" style="color:var(--violet)">contact form</a>.</p>
+    <p>Lucky Penny is developed and operated by an independent developer, who is the data controller under the EU General Data Protection Regulation (GDPR). Contact for anything in this policy, including requests to exercise your rights: the <a href="contact.html?topic=privacy" style="color:var(--accent-text)">contact form</a>.</p>
 <p>This policy covers the Lucky Penny apps for iOS, Android and macOS and the optional Lucky Penny cloud service.</p>
   </div>
   <div class="policy-section" id="s2">
@@ -193,7 +195,7 @@
   </div>
   <div class="policy-section" id="s3">
     <h2><span class="sec-num">3</span> What we process, why, and on what legal basis</h2>
-    <table class="data-table">
+    <div class="table-scroll"><table class="data-table">
 <thead><tr><th>Data</th><th>When</th><th>Purpose</th><th>Legal basis (GDPR Art. 6)</th></tr></thead>
 <tbody>
 <tr><td>Name, email, Apple/Google account identifier</td><td>You sign in with Apple or Google</td><td>Create and secure your account</td><td>Contract (6(1)(b))</td></tr>
@@ -205,7 +207,7 @@
 <tr><td>Push notification token, device ID, platform</td><td>You allow notifications while signed in</td><td>Tell you when a share is accepted or an invite arrives</td><td>Consent (6(1)(a))</td></tr>
 <tr><td>Security and service logs (sync change log, request keys, service health)</td><td>While you use the cloud service</td><td>Keep sync consistent, prevent duplicate or replayed requests, keep the service running</td><td>Legitimate interests (6(1)(f)): a secure, working service</td></tr>
 </tbody>
-</table>
+</table></div>
 <p>Where we rely on consent, you can withdraw it at any time in your device settings or in the app. This does not affect processing that already took place.</p>
   </div>
   <div class="policy-section" id="s4">
@@ -222,7 +224,7 @@
   <div class="policy-section" id="s5">
     <h2><span class="sec-num">5</span> Who else processes your data</h2>
     <p>We use these service providers (processors). They act on our instructions under data processing agreements:</p>
-<table class="data-table">
+<div class="table-scroll"><table class="data-table">
 <thead><tr><th>Provider</th><th>What for</th><th>Where</th></tr></thead>
 <tbody>
 <tr><td>Supabase, Inc.</td><td>Database, authentication, file storage (profile photos), server functions</td><td>EU (Ireland, AWS eu-west-1)</td></tr>
@@ -230,7 +232,7 @@
 <tr><td>Apple, Google</td><td>Sign in with Apple and Google Sign-In, if you choose them</td><td>Global, including the US</td></tr>
 <tr><td>Umami Software (Umami Cloud)</td><td>Counting visits and download-button clicks on this website, without cookies (website only, not the app)</td><td>Umami Cloud; see umami.is/privacy</td></tr>
 </tbody>
-</table>
+</table></div>
 <p>Exchange rates come from the European Commission's public InforEuro service. No personal data is sent. The in-app donation link opens Buy Me a Coffee, a separate service with its own privacy policy. People you share with see what you choose to share with them.</p>
   </div>
   <div class="policy-section" id="s6">
@@ -240,7 +242,7 @@
   <div class="policy-section" id="s7">
     <h2><span class="sec-num">7</span> How long we keep data</h2>
     <p>Account data is kept while your account exists and erased when you delete it (see below). Operational records are deleted automatically on a daily schedule:</p>
-<table class="data-table">
+<div class="table-scroll"><table class="data-table">
 <thead><tr><th>Record</th><th>Kept for</th></tr></thead>
 <tbody>
 <tr><td>Deleted transactions (kept so your other devices can sync the deletion)</td><td>90 days after deletion</td></tr>
@@ -252,7 +254,7 @@
 <tr><td>Push tokens of devices that stopped using the app</td><td>Disabled after 270 days, deleted after 300 days</td></tr>
 <tr><td>Request keys and service health logs (no personal content)</td><td>Up to 7 days</td></tr>
 </tbody>
-</table>
+</table></div>
 <p>Database backups kept by our hosting provider expire on the provider's schedule.</p>
   </div>
   <div class="policy-section" id="s8">
@@ -277,14 +279,14 @@
 <li><strong>Object</strong> to processing based on legitimate interests (Art. 21)</li>
 <li><strong>Withdraw consent</strong> at any time (Art. 7(3))</li>
 </ul>
-<p>To exercise any right, use the <a href="contact.html?topic=privacy" style="color:var(--violet)">contact form</a> (choose "Privacy request") and write from the email address linked to your account — we may use it to confirm the request is really yours. We answer within one month (Art. 12(3)). There is no charge.</p>
+<p>To exercise any right, use the <a href="contact.html?topic=privacy" style="color:var(--accent-text)">contact form</a> (choose "Privacy request") and write from the email address linked to your account — we may use it to confirm the request is really yours. We answer within one month (Art. 12(3)). There is no charge.</p>
   </div>
   <div class="policy-section" id="s10">
     <h2><span class="sec-num">10</span> Deleting your data</h2>
     <ul>
 <li><strong>Account and all cloud data:</strong> Settings -&gt; Account -&gt; Delete Account. This deletes your profile, synced records, device tokens, social links, profile photo and the workspaces you own, and it happens immediately. In split groups that other people are part of, their shared ledger remains and your entry is shown as "Deleted user".</li>
 <li><strong>Only this device:</strong> Settings -&gt; Delete All Data -&gt; This device only, or uninstall the app.</li>
-<li><strong>Without the app:</strong> follow <a href="delete-account.html" style="color:var(--violet)">these steps</a>.</li>
+<li><strong>Without the app:</strong> follow <a href="delete-account.html" style="color:var(--accent-text)">these steps</a>.</li>
 </ul>
   </div>
   <div class="policy-section" id="s11">
@@ -302,9 +304,9 @@
   </div>
   <div class="policy-section" id="s14">
     <h2><span class="sec-num">14</span> Contact and complaints</h2>
-    <p>Questions or requests: <a href="contact.html" style="color:var(--violet)">contact form</a>.</p>
+    <p>Questions or requests: <a href="contact.html" style="color:var(--accent-text)">contact form</a>.</p>
 <p>When you write to us through the form, we process the name, email address and message you send solely to answer you (legitimate interests, Art. 6(1)(f)). Messages are stored in an email mailbox provided by Google and are deleted when no longer needed, or on request.</p>
-<p>You have the right to lodge a complaint with a data protection supervisory authority, in particular in the EU country where you live or work. In Greece this is the <a href="https://www.dpa.gr" style="color:var(--violet)">Hellenic Data Protection Authority</a>. We would appreciate the chance to resolve your concern first.</p>
+<p>You have the right to lodge a complaint with a data protection supervisory authority, in particular in the EU country where you live or work. In Greece this is the <a href="https://www.dpa.gr" style="color:var(--accent-text)">Hellenic Data Protection Authority</a>. We would appreciate the chance to resolve your concern first.</p>
   </div>
 </div>
 <footer>
@@ -314,11 +316,12 @@
   </div>
   <div class="footer-links">
     <a href="index.html">Home</a>
-    <a href="terms.html">Terms</a>
-    <a href="privacy.html">Privacy</a>
+    <a href="how-it-works.html">How it works</a>
     <a href="support.html">Support</a>
-    <a href="delete-account.html">Delete account</a>
     <a href="contact.html">Contact</a>
+    <a href="privacy.html" aria-current="page">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="delete-account.html">Delete account</a>
   </div>
 </footer>
 </body>
