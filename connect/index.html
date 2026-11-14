@@ -206,7 +206,7 @@
     <div class="divider">or download</div>
 
     <!-- Store buttons -->
-    <a id="ios-btn" href="https://apps.apple.com/app/penny-finance/id6760491274"
+    <a id="ios-btn" href="https://apps.apple.com/app/id6822307815"
        class="btn btn-store">
       <span>📱</span> Download on the App Store
     </a>
@@ -255,6 +255,22 @@
       if (currency) {
         deepLink += '&cur=' + encodeURIComponent(currency);
       }
+
+      // Join mode (?join=G-ABCD-2345): a group invite sent after a Splitwise
+      // import. Same rules as the app (letters, digits, dashes; <= 32 chars).
+      var joinCode = (params.get('join') || '').trim().toUpperCase();
+      if (joinCode && /^[A-Z0-9-]{1,32}$/.test(joinCode)) {
+        heading.textContent = 'Join a group on Lucky Penny';
+        document.getElementById('subtitle').textContent =
+          'Install Lucky Penny, then open the app and join with this code:';
+        shareIdEl.textContent = joinCode;
+        nameSection.classList.add('hidden');
+        deepLink = 'luckypenny://join?code=' + encodeURIComponent(joinCode);
+        openBtn.textContent = 'Open Lucky Penny and join';
+        var ogT = document.querySelector('meta[property="og:title"]');
+        if (ogT) ogT.setAttribute('content', 'Join a group on Lucky Penny');
+        document.title = 'Join a group on Lucky Penny';
+      }
       openBtn.href = deepLink;
 
       // Platform detection: hide irrelevant store button
@@ -272,7 +288,7 @@
           var start = Date.now();
           setTimeout(function() {
             if (Date.now() - start < 2000) {
-              window.location.href = 'https://apps.apple.com/app/penny-finance/id6760491274';
+              window.location.href = 'https://apps.apple.com/app/id6822307815';
             }
           }, 1500);
         });
