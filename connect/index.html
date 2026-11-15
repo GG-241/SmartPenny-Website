@@ -289,6 +289,15 @@
         shareIdEl.textContent = joinCode;
         nameSection.classList.add('hidden');
         deepLink = 'luckypenny://join?code=' + encodeURIComponent(joinCode);
+        // A personal invite (&for=<token>) joins without approval and brings
+        // the person's imported history. Same rule as the app: 16-64 URL-safe
+        // characters; anything else is dropped and the code still works.
+        var claim = (params.get('for') || '').trim();
+        if (/^[A-Za-z0-9_-]{16,64}$/.test(claim)) {
+          deepLink += '&for=' + encodeURIComponent(claim);
+          document.getElementById('subtitle').textContent =
+            'This invite is just for you. Install Lucky Penny, then open it to join — your past expenses come with you.';
+        }
         openBtn.textContent = 'Open Lucky Penny and join';
         var ogT = document.querySelector('meta[property="og:title"]');
         if (ogT) ogT.setAttribute('content', 'Join a group on Lucky Penny');
