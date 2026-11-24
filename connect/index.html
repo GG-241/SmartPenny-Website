@@ -13,7 +13,7 @@
   <meta property="og:image" content="https://gg-241.github.io/SmartPenny-Website/assets/img/og-image.jpg" />
 
   <!-- Apple Smart Banner (prompts install if app not present) -->
-  <meta name="apple-itunes-app" content="app-id=6760491274" />
+  <meta name="apple-itunes-app" content="app-id=6822307815" />
 
   <link rel="icon" type="image/png" href="../assets/img/lucky-penny-icon.png" />
   <link rel="apple-touch-icon" href="../assets/img/lucky-penny-icon.png" />
@@ -234,7 +234,7 @@
       <span class="store-label" data-live="Get it on Google Play">Google Play · coming soon</span>
     </a>
 
-    <p class="hint">
+    <p class="hint" id="hint">
       Don't have the app? Copy the sharing ID above and enter it in
       <strong>Lucky Penny → Contacts → Add Contact</strong>.
     </p>
@@ -299,6 +299,9 @@
             'This invite is just for you. Install Lucky Penny, then open it to join — your past expenses come with you.';
         }
         openBtn.textContent = 'Open Lucky Penny and join';
+        // The default hint is about sharing IDs; this page shows a group code.
+        document.getElementById('hint').textContent =
+          'Nothing opened? In Lucky Penny, go to Groups, choose "Join with a code" and enter the code above. The group\'s owner then approves you.';
         var ogT = document.querySelector('meta[property="og:title"]');
         if (ogT) ogT.setAttribute('content', 'Join a group on Lucky Penny');
         document.title = 'Join a group on Lucky Penny';
